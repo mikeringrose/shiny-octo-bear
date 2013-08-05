@@ -1,0 +1,29 @@
+@(route: models.route.Route)
+<div itemscope itemtype="http://mapquest.com/Route"> 
+  <meta itemprop="id" content="@route.sessionId"></meta>
+  <meta itemprop="shapePoints" content="@route.shapePoints.mkString(",")"></meta>
+  @for(i <- 0 until route.locations.length) { 
+    @defining(route.locations(i)) { location =>
+      <div itemscope itemprop="location" itemtype="http://schema.org/Place">
+        <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+          <span itemprop="street">@location.address.streetAddress</span>
+          <span itemprop="addressRegion">@location.address.addressRegion</span>,
+          <span itemprop="addressLocality">@location.address.addressLocality</span>
+          <span itemprop="postalCode">@location.address.postalCode</span>
+          <span itemprop="streetAddress">@location.address.addressCountry</span>          
+        </div>
+        <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+          <span itemprop="latitude">@location.geo._1</span>
+          <span itemprop="longitude">@location.geo._2</span>
+        </div>
+      </div>
+      @if(i < route.legs.length) {
+        <ul>
+          @for(maneuver <- route.legs(i).maneuvers) {
+            <li>@maneuver.narrative</li>
+          }
+        </ul>
+      }
+    }
+  }
+</div>

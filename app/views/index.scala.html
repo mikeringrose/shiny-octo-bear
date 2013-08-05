@@ -1,0 +1,38 @@
+@main("MapQuest") {
+  <div class="navbar navbar-fixed-top">
+    <a class="navbar-brand" href="/"></a>
+  </div>
+  <div id="mainWrapper">
+    <div id="contentWrapper">
+      <div id="searchBox" class="search-mode">
+        <form id="search" name="search" class="form-inline">
+          <div class="form-group">
+            <input class="form-control" type="text" placeholder="Enter address, business, landmark">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+        </form>
+        <form id="directions" name="directions" class="form-inline">
+          <div class="form-group">
+            <input class="form-control" type="text" name="a" placeholder="A" tabindex="1">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </div>
+          <input class="form-control" type="text" name="b" placeholder="B" tabindex="2">
+        </form>        
+        <div class="directions-options clearfix">
+          <span>Directions</span>
+          <ul class="nav nav-pills">
+            <li><a href="#/directions/driving">Driving</a></li>
+            <li><a href="#/directions/transit">Transit</a></li>
+            <li><a href="#/directions/bicycle">Bicycle</a></li>
+            <li><a href="#/directions/walking">Walking</a></li>
+          </ul>
+        </div>
+        <div id="searchResults"></div>
+      </div>
+      <div id="place"></div>      
+    </div>
+    <div id="mapWrapper">
+      <div></div>
+    </div>
+  </div>
+}

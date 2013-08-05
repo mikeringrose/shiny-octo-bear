@@ -1,0 +1,122 @@
+#mapWrapper {
+  position: fixed !important;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: -60px;
+  overflow: hidden;
+
+  > div {
+    position: fixed !important;
+    padding-top: 60px;
+    left: 375px;
+  }
+}
+
+
+body {
+  color: #888;
+}
+
+.navbar {
+  background-color: #fff;
+  padding: 0 20px;
+}
+
+.directions-options {
+  margin-top: 10px;
+  line-height: 1;
+
+  span {
+    padding: 10px 15px;
+  }
+
+  > span, li {
+    float: left;
+  }
+}
+
+.navbar-brand {
+  display: inline-block;
+  width: 250px;
+  height: 42px;
+  background: url(../images/sprite_winston.png) no-repeat scroll 0 -775px transparent;
+}
+
+#contentWrapper {
+  position: absolute;
+  z-index: 3;
+  top: 70px;  
+  left: 20px;
+  right: 60px;
+
+  #place, #searchBox {
+    float: left;
+    background: #fff;    
+    border-radius: 5px;
+  }
+
+  #place {
+    clear: both;
+    width: 100%;    
+    min-width: 960px;
+    min-height: 960px;
+    margin: 400px 0 10px;
+    display: none;    
+  }
+
+  #searchBox {
+    float: left;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #b5b5b5;
+
+    form, .input-append {
+      margin-bottom: 0;
+    }
+
+    input {
+      box-sizing: border-box;
+      height: auto;
+      width: 350px;
+    }
+
+    #search {
+      display: none;
+    }
+
+    &.search-mode {
+      #search {
+        display: block;
+      }
+
+      #directions {
+        display: none;
+      }
+    }  
+  }
+
+  #searchResults {
+    ul {
+      border-top: 1px solid #d5d5d5;
+      margin: 20px 0 0;
+      padding: 10px 0px;
+      list-style-type: none;
+
+      > li {
+        margin-bottom: 10px;
+      }
+    }
+
+    h1 {
+      font-size: 1em;
+      padding: 5px 0;
+      margin: 0;
+      line-height: 1;
+    }
+
+    [itemprop=geo] {
+      display: none;
+    }
+  }
+}

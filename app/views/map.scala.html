@@ -1,0 +1,17 @@
+@(searchResult: models.Place)
+<div itemscope itemtype="http://schema.org/LocalBusiness">
+  <h1><a href="#/place/@searchResult.id"><span itemprop="name">@searchResult.name</span></a></h1>
+  <span itemprop="description"></span>
+  <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+    <span itemprop="street">@searchResult.address.streetAddress</span>
+    <span itemprop="streetAddress">@searchResult.address.addressCountry</span>
+    <span itemprop="addressLocality">@searchResult.address.addressLocality</span>,
+    <span itemprop="addressRegion">@searchResult.address.addressRegion</span>
+    <span itemprop="postalCode">@searchResult.address.postalCode</span>
+  </div>
+  <div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+    <span itemprop="latitude">@searchResult.geo._1</span>
+    <span itemprop="longitude">@searchResult.geo._2</span>
+  </div>
+  Phone: <span itemprop="telephone">@searchResult.phone</span>
+</div>
