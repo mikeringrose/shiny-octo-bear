@@ -1,7 +1,7 @@
 @(searchResults: List[models.Place])
 <ul>
   @for(searchResult <- searchResults) { 
-    <li itemscope itemtype="http://schema.org/LocalBusiness">
+    <li itemscope itemtype="http://schema.org/Place">
       <h1><a href="#/place/@searchResult.id"><span itemprop="name">@searchResult.name</span></a></h1>
       <span itemprop="description"></span>
       <div itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
