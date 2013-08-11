@@ -12,7 +12,7 @@ import uritemplate._
 import Syntax._
 
 class RouteRequest(from: String, to: String) {  
-  val routeTemplate = URITemplate("http://www.mapquestapi.com/directions/v1/route{?key,from,to,shapeFormat,generalize,ambiguities}")
+  val routeTemplate = URITemplate("http://ps.web-integration.mapquest.com/directions/v1/route{?key,from,to,shapeFormat,generalize,ambiguities}&generalize=5")
 
   implicit val maneuverReads: Reads[Maneuver] = (
     (__ \ "distance").read[Float] and
@@ -50,13 +50,14 @@ class RouteRequest(from: String, to: String) {
   implicit val routeReads: Reads[Route] = (
     (__ \ "sessionId").read[String] and
     (__ \ "distance").read[Float] and
+    (__ \ "hasHighway").read[Boolean] and
     (__ \ "shape" \ "shapePoints").read[List[Float]] and
     (__ \ "locations").read[List[Place]] and
     (__ \ "legs").read[List[Leg]]
   )(Route)
 
   def run() = {
-    val routeURL = routeTemplate expand ("key" := "mjtd|luu72h6t29,a5=o5-h625", "from" := this.from, "to" := this.to, "shapeFormat" := "raw", "generalize" := "0", "ambiguities" := "ignore")
+    val routeURL = routeTemplate expand ("key" := "Cmjtd|luu72h6t29,a5=o5-h625", "from" := this.from, "to" := this.to, "shapeFormat" := "raw", "generalize" := "2", "ambiguities" := "ignore")
     WS.url(routeURL).get().map { response  => (response.json \ "route").as[Route] }
   }
 }

@@ -1,7 +1,8 @@
 @(route: models.route.Route)
 <div itemscope itemtype="http://mapquest.com/Route"> 
-  <meta itemprop="id" content="@route.sessionId"></meta>
-  <meta itemprop="shapePoints" content="@route.shapePoints.mkString(",")"></meta>
+  <meta itemprop="sessionId" content="@route.sessionId"></meta>
+  <meta itemprop="shapePoints" content="@route.shapePoints.mkString(",")">
+  <meta itemprop="hasHighway" content="@route.hasHighway">
   @for(i <- 0 until route.locations.length) { 
     @defining(route.locations(i)) { location =>
       <div itemscope itemprop="location" itemtype="http://schema.org/Place">

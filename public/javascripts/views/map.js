@@ -16,6 +16,8 @@ define(function() {
           lat: self.geo.latitude
           , lng: self.geo.longitude
         }
+        , bestFitMargin: 20
+        , bufferSize: 2
       });
 
       MQA.withModule('smallzoom', function () {
@@ -55,8 +57,8 @@ define(function() {
 
   function newRouteRibbon(shapePoints) {
     var line = new MQA.LineOverlay();
-    line.color = "#ff0000";
-    line.colorAlpha = .7;
+    line.color = "#1E90FF";
+    line.colorAlpha = .9;
     line.borderWidth = 5;
     line.setShapePoints(shapePoints);
     return line;
