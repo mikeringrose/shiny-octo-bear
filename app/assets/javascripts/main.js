@@ -1,4 +1,4 @@
-require(["router", "views/map", "views/search", "views/place", "views/exit_marker", "services/route"], function(Router, Map, Search, Place, ExitMarker, RouteService) {
+require(["router", "views/map", "views/search", "views/place", "views/exit_manager", "services/route"], function(Router, Map, Search, Place, ExitManager, RouteService) {
   var mapOptions = {
       el: $("#mapWrapper:first")[0]
       , zoom: 10
@@ -7,6 +7,8 @@ require(["router", "views/map", "views/search", "views/place", "views/exit_marke
         , longitude: -105.020089
       }
     };
+
+  window.$pv = function() {};
 
   var map = new Map(mapOptions).render();
   var search = new Search({el: $("#searchBox")[0], map: map}).render();
@@ -24,7 +26,7 @@ require(["router", "views/map", "views/search", "views/place", "views/exit_marke
 
     RouteService.exits(sessionId)
       .then(function(exits) {
-        new ExitMarker({map: map, exits: exits, shapePoints: shapePoints}).render();
+        new ExitManager({map: map, exits: exits, shapePoints: shapePoints}).render();
       });
   });
 

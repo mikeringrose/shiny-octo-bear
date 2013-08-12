@@ -1,6 +1,6 @@
 define(['utils/math'], function(Util) {
   function ExitMarker(options) {
-    this.mqa = options.map.map;
+    this.mqa = options.map;
     this.exits = options.exits;
     this.shapePoints = options.shapePoints;
     this.exitRibbon = new ExitRibbon(this.shapePoints, this.exits);
@@ -19,23 +19,50 @@ define(['utils/math'], function(Util) {
       MQA.withModule('htmlpoi', function() {
         var currentStop = self.exitRibbon.currentStop()
           , exitMarker = self.exitMarker = new MQA.HtmlPoi(currentStop.latLng)
-          , $html = $('<div><a class="prev" href="#prev">&#x25c0;</a><span>Exit ' + currentStop.number + '</span><a class="next" href="#next">&#x25BA;</a></div>');
+          , $html = $('<div id="exit-marker"><div class="route-pin"><span><span class="hotel-count"></span> Hotels</span></div><div class="handle"></div></div>');
 
-        MQA.EventManager.addListener(exitMarker, 'click', self.move);
-        exitMarker.setHtml($html.html());
+        _.bindAll(self, 'movePin', 'unmove');
+
+        $('body').on('mouseup', self.unmove);
+        MQA.EventManager.addListener(exitMarker, 'mousedown', self.move, self);
+
+        exitMarker.setHtml($html.html(), -23, -60, 'exit-marker');
         self.mqa.addShape(exitMarker);
       });
     }
 
     , move: function(evt) {
-      var direction = $(evt.domEvent.target || evt.domEvent.srcElement).attr('href');
+      var isHandle = $(evt.domEvent.target || evt.domEvent.srcElement).hasClass('handle');
 
-      if (direction === "#next") {
-        this.next()
+      if (isHandle) {
+        this.prevPageX = evt.domEvent.pageX;
+        this.prevPageY = evt.domEvent.pageY;
+        $('#mapWrapper').on('mousemove', this.movePin);
       }
-      else if (direction === "#prev") {
-        this.previous();
-      }
+    }
+
+    , unmove: function(evt) {
+      $('#mapWrapper').off('mousemove', this.movePin);
+      var closest = this.exitRibbon.closestExit(this.exitMarker.latLng);
+      this.exitMarker.setLatLng(closest.latLng);
+    } 
+
+    , movePin: function(evt) {
+      var changeX = evt.pageX - this.prevPageX
+        , changeY = evt.pageY - this.prevPageY
+        , pixLoc = this.mqa.llToPix(this.exitMarker.latLng)
+        , newPixLoc = {x: (pixLoc.x + changeX), y: (pixLoc.y + changeY)}
+        , newLatLng = this.mqa.pixToLL(newPixLoc);
+
+      this.prevPageX = evt.pageX;
+      this.prevPageY = evt.pageY;
+
+      this.exitMarker.setLatLng(newLatLng);
+    }
+
+    , moveTo: function(exit) {
+      var path = this.exitRibbon.moveTo(exit);
+      this.animate(path);
     }
 
     , previous: function() {
@@ -56,10 +83,7 @@ define(['utils/math'], function(Util) {
           idx += 1;
 
           if (idx < path.length) {
-            setTimeout(update, 1/30);
-          }
-          else {
-            self.exitMarker.setHtml('<div><a class="prev" href="#prev">&#x25c0;</a><span>Exit ' + self.exitRibbon.currentStop().number + '</span><a class="next" href="#next">&#x25BA;</a></div>');
+            setTimeout(update, 30);
           }
         };
       update();
@@ -79,6 +103,25 @@ define(['utils/math'], function(Util) {
      */
     currentStop: function() {
       return this.stops[this.current];
+    }
+
+    , moveTo: function(exit) {
+      var currStop = this.currentStop()
+        , nextIndex = _.indexOf(this.stops, exit)
+        , nextStop, path;
+
+      nextStop = this.stops[nextIndex];
+
+      if (nextIndex > this.current) {
+        path = this.computePath(currStop, nextStop);
+      }
+      else {
+        path = this.computePath(nextStop, currStop).reverse();
+      }
+
+      this.current = nextIndex;
+
+      return path;
     }
 
     /**
@@ -101,13 +144,20 @@ define(['utils/math'], function(Util) {
       var start = this.getSegment(currStop)
         , stop = this.getSegment(nextStop)
         , segs = this.route.slice(start, stop + 2);
-      return this.computeAnimatedPath(segs, .0025);
+
+      //- bit hacky but our start and stops should be our exit
+      segs[0] = currStop.latLng.lat;
+      segs[1] = currStop.latLng.lng;
+      segs[segs.length - 2] = nextStop.latLng.lat;
+      segs[segs.length - 1] = nextStop.latLng.lng;
+
+      return this.computeAnimatedPath(segs, .005);
     }
 
     , computeAnimatedPath: function(segs, step) {
       var curr = {lat: segs[0], lng: segs[1]}
         , remaining = step
-        , path = []
+        , path = [curr]
         , dist, pct, uv;
 
       for (var i = 2; i < segs.length;) {
@@ -170,6 +220,14 @@ define(['utils/math'], function(Util) {
       }
 
       return _.min(distances, function(distance) { return distance.distance; }).index;      
+    }
+
+    , closestExit: function(latLng) {
+      var distances = _.map(this.stops, function(stop, index) {
+        return { stop: stop, distance: Util.distance(stop.latLng, latLng) };
+      });
+
+      return _.min(distances, function(distance) { return distance.distance; }).stop;
     }
   };
 
