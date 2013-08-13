@@ -1,4 +1,13 @@
 define(['utils/math'], function(Util) {
+  var html = '<div id="exit-marker">'
+              + '<div class="route-pin">'
+              + ' <p class="inventory-level"><span></span> Hotels</p>'
+              + ' <p class="min-price">From <span></span></p>'
+              + '</div>'
+              + '<div class="handle"></div>'
+              + '</div>'
+    , template = _.template(html);
+
   function ExitMarker(options) {
     this.mqa = options.map;
     this.exits = options.exits;
@@ -19,13 +28,12 @@ define(['utils/math'], function(Util) {
       MQA.withModule('htmlpoi', function() {
         var currentStop = self.exitRibbon.currentStop()
           , exitMarker = self.exitMarker = new MQA.HtmlPoi(currentStop.latLng)
-          , $html = $('<div id="exit-marker"><div class="route-pin"><span><span class="hotel-count"></span> Hotels</span></div><div class="handle"></div></div>');
+          , $html = $(template());
 
         _.bindAll(self, 'movePin', 'unmove');
 
         $('body').on('mouseup', self.unmove);
         MQA.EventManager.addListener(exitMarker, 'mousedown', self.move, self);
-
         exitMarker.setHtml($html.html(), -23, -60, 'exit-marker');
         self.mqa.addShape(exitMarker);
       });
@@ -35,8 +43,7 @@ define(['utils/math'], function(Util) {
       var isHandle = $(evt.domEvent.target || evt.domEvent.srcElement).hasClass('handle');
 
       if (isHandle) {
-        this.prevPageX = evt.domEvent.pageX;
-        this.prevPageY = evt.domEvent.pageY;
+        this.previousPosition = [evt.domEvent.pageX, evt.domEvent.pageY];
         $('#mapWrapper').on('mousemove', this.movePin);
       }
     }
@@ -48,16 +55,8 @@ define(['utils/math'], function(Util) {
     } 
 
     , movePin: function(evt) {
-      var changeX = evt.pageX - this.prevPageX
-        , changeY = evt.pageY - this.prevPageY
-        , pixLoc = this.mqa.llToPix(this.exitMarker.latLng)
-        , newPixLoc = {x: (pixLoc.x + changeX), y: (pixLoc.y + changeY)}
-        , newLatLng = this.mqa.pixToLL(newPixLoc);
-
-      this.prevPageX = evt.pageX;
-      this.prevPageY = evt.pageY;
-
-      this.exitMarker.setLatLng(newLatLng);
+      var newLatLng = this.mqa.pixToLL({x: (evt.pageX - 500), y: (evt.pageY - 70)});
+      this.exitMarker.setLatLng(newLatLng);     
     }
 
     , moveTo: function(exit) {
